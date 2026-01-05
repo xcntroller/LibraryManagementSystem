@@ -11,6 +11,8 @@ namespace LibraryManagementSystem.Interfaces
         Task<bool> IsOverdueAsync(int id);
         Task<List<Loan>> GetActiveLoansByBookIdAsync(int bookId);
         Task<List<Loan>> GetLoansByMemberAsync(string memberName);
+        Task<List<Loan>> GetLoanHistoryByMemberAsync(string memberName);
+        Task<List<Loan>> GetLoanHistoryByBookIdAsync(int bookId);
         Task<List<Loan>> GetActiveLoansAsync();
         Task<List<Loan>> GetOverdueLoansAsync();
         Task ReturnLoanAsync(int loanId);

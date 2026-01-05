@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace LibraryManagementSystem.Entities
+﻿namespace LibraryManagementSystem.Entities
 {
     public class Author
     {

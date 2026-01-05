@@ -56,6 +56,24 @@ namespace LibraryManagementSystem.Repositories
             return await _context.Loans.Where(l => l.MemberName == memberName).ToListAsync();
         }
 
+        public async Task<List<Loan>> GetLoanHistoryByMemberAsync(string memberName)
+        {
+            return await _context.Loans
+                .Include(l => l.Book)
+                .Where(l => l.MemberName == memberName)
+                .OrderByDescending(l => l.LoanDate)
+                .ToListAsync();
+        }
+
+        public async Task<List<Loan>> GetLoanHistoryByBookIdAsync(int bookId)
+        {
+            return await _context.Loans
+                .Include(l => l.Book)
+                .Where(l => l.BookId == bookId)
+                .OrderByDescending(l => l.LoanDate)
+                .ToListAsync();
+        }
+
         public async Task<List<Loan>> GetActiveLoansAsync()
         {
             return await _context.Loans.Where(l => l.ReturnedAt == null).ToListAsync();

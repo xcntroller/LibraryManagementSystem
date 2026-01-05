@@ -28,9 +28,14 @@ namespace LibraryManagementSystem.Repositories
             return await _context.Authors.Include(a => a.Books).SingleOrDefaultAsync(a => a.Id == id);
         }
 
+        public async Task<bool> HasBooksAsync(int id)
+        {
+            return await _context.Books.AnyAsync(b => b.AuthorId == id);
+        }
+
         public async Task<Author?> GetByNameAsync(string firstName, string lastName)
         {
-            return await _context.Authors.SingleOrDefaultAsync(a => a.FirstName == firstName && a.LastName == lastName);
+            return await _context.Authors.Include(a => a.Books).SingleOrDefaultAsync(a => a.FirstName == firstName && a.LastName == lastName);
         }
 
         public async Task<List<Book>> GetAuthorsBooksAsync(int authorId)
