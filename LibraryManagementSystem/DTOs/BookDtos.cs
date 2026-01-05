@@ -5,6 +5,7 @@
     {
         public string Name { get; set; } = null!;
         public string ISBN { get; set; } = null!;
+        public string Description { get; set; } = null!;
         public int PublicationYear { get; set; }
         public int PcsTotal { get; set; }
         public int AuthorId { get; set; }
@@ -15,6 +16,7 @@
         public int Id { get; set; }
         public string Name { get; set; } = null!;
         public string ISBN { get; set; } = null!;
+        public string Description { get; set; } = null!;
         public int PublicationYear { get; set; }
         public int PcsTotal { get; set; }
         public int PcsInStock { get; set; }
@@ -35,6 +37,7 @@
     {
         public string Name { get; set; } = null!;
         public string ISBN { get; set; } = null!;
+        public string Description { get; set; } = null!;
         public int PublicationYear { get; set; }
         public int PcsTotal { get; set; }
         public int AuthorId { get; set; }

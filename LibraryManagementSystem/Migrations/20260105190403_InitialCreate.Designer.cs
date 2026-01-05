@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryManagementSystem.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
-    [Migration("20260105164313_InitialCreate")]
+    [Migration("20260105190403_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -26,18 +26,18 @@ namespace LibraryManagementSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("birthYear")
+                    b.Property<int>("BirthYear")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("description")
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("firstName")
+                    b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("lastName")
+                    b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -55,6 +55,10 @@ namespace LibraryManagementSystem.Migrations
                     b.Property<int>("AuthorId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("ISBN")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -63,13 +67,13 @@ namespace LibraryManagementSystem.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("PcsInStock")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PcsTotal")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("PublicationYear")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("pcsInStock")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("pcsTotal")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -96,6 +100,9 @@ namespace LibraryManagementSystem.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("ReturnDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ReturnedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

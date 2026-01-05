@@ -17,10 +17,10 @@ namespace LibraryManagementSystem.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    firstName = table.Column<string>(type: "TEXT", nullable: false),
-                    lastName = table.Column<string>(type: "TEXT", nullable: false),
-                    description = table.Column<string>(type: "TEXT", nullable: false),
-                    birthYear = table.Column<int>(type: "INTEGER", nullable: false)
+                    FirstName = table.Column<string>(type: "TEXT", nullable: false),
+                    LastName = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
+                    BirthYear = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -35,9 +35,10 @@ namespace LibraryManagementSystem.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     ISBN = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
                     PublicationYear = table.Column<int>(type: "INTEGER", nullable: false),
-                    pcsTotal = table.Column<int>(type: "INTEGER", nullable: false),
-                    pcsInStock = table.Column<int>(type: "INTEGER", nullable: false),
+                    PcsTotal = table.Column<int>(type: "INTEGER", nullable: false),
+                    PcsInStock = table.Column<int>(type: "INTEGER", nullable: false),
                     AuthorId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -59,6 +60,7 @@ namespace LibraryManagementSystem.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     LoanDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     ReturnDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ReturnedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
                     BookId = table.Column<int>(type: "INTEGER", nullable: false),
                     MemberName = table.Column<string>(type: "TEXT", nullable: false)
                 },
