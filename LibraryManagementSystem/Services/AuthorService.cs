@@ -48,29 +48,6 @@ namespace LibraryManagementSystem.Services
             };
         }
 
-        public async Task<AuthorDetailDto?> GetAuthorByNameAsync(string firstName, string lastName)
-        {
-            var author = await _authorRepo.GetByNameAsync(firstName, lastName);
-            if (author == null) return null;
-
-            return new AuthorDetailDto
-            {
-                Id = author.Id,
-                FirstName = author.FirstName,
-                LastName = author.LastName,
-                Description = author.Description,
-                BirthYear = author.BirthYear,
-                Books = author.Books.Select(b => new ListBookDto
-                {
-                    Id = b.Id,
-                    Name = b.Name,
-                    PublicationYear = b.PublicationYear,
-                    PcsInStock = b.PcsInStock,
-                    AuthorId = b.AuthorId
-                }).ToList()
-            };
-        }
-
         public async Task<List<ListBookDto>> GetAuthorsBooksAsync(int authorId)
         {
             var books = await _authorRepo.GetAuthorsBooksAsync(authorId);

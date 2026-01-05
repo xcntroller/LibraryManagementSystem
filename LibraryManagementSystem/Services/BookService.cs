@@ -69,7 +69,7 @@ namespace LibraryManagementSystem.Services
             // Validate author exists
             if (!await _authorRepo.ExistsByIdAsync(dto.AuthorId))
             {
-                throw new Exception("Autor neexistuje.");
+                return null;
             }
 
             var book = new Book
@@ -106,7 +106,7 @@ namespace LibraryManagementSystem.Services
             // Validate author exists
             if (!await _authorRepo.ExistsByIdAsync(dto.AuthorId))
             {
-                throw new Exception("Autor neexistuje.");
+                return false;
             }
 
             book.Name = dto.Name;
@@ -128,18 +128,12 @@ namespace LibraryManagementSystem.Services
             // Check if book has active loans
             if (await _bookRepo.HasActiveLoansAsync(id))
             {
-                throw new Exception("Nelze smazat knihu která je již půjčená.");
+                return false;
             }
 
             await _bookRepo.DeleteAsync(book);
             return true;
         }
-
-        public async Task<bool> IsBookAvailableAsync(int id)
-        {
-            return await _bookRepo.IsAvailableAsync(id);
-        }
-
         public async Task DecrementStockAsync(int bookId)
         {
             await _bookRepo.DecrementStockAsync(bookId);

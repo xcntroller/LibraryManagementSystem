@@ -6,7 +6,6 @@ namespace LibraryManagementSystem.Interfaces
     {
         Task<List<Author>> GetAllAsync(string? filter = null);
         Task<Author?> GetByIdAsync(int id);
-        Task<Author?> GetByNameAsync(string firstName, string lastName);
         Task<List<Book>> GetAuthorsBooksAsync(int authorId);
         Task<bool> ExistsByIdAsync(int id);
         Task<bool> HasBooksAsync(int id);

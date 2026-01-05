@@ -57,11 +57,6 @@ namespace LibraryManagementSystem.Repositories
             return await _context.Loans.AnyAsync(l => l.BookId == bookId && l.ReturnedAt == null);
         }
 
-        public async Task<bool> IsAvailableAsync(int bookId)
-        {
-            return await _context.Books.AnyAsync(b => b.Id == bookId && b.PcsInStock > 0);
-        }
-
         public async Task DecrementStockAsync(int bookId)
         {
             var book = await _context.Books.FindAsync(bookId);

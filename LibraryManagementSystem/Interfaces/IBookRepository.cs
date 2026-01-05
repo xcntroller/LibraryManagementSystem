@@ -11,7 +11,6 @@ namespace LibraryManagementSystem.Interfaces
         Task UpdateAsync(Book book);
         Task DeleteAsync(Book book);
         Task<bool> HasActiveLoansAsync(int bookId);
-        Task<bool> IsAvailableAsync(int bookId);
         Task DecrementStockAsync(int bookId);
         Task IncrementStockAsync(int bookId);
     }

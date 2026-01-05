@@ -45,32 +45,44 @@ namespace LibraryManagementSystem.Services
             };
         }
 
-        public async Task<List<LoanHistoryDto>> GetLoanHistoryByMemberAsync(string memberName)
+        public async Task<List<ListLoansDto>> GetActiveLoansByBookId(int id)
         {
-            var loans = await _loanRepo.GetLoanHistoryByMemberAsync(memberName);
-            return loans.Select(l => new LoanHistoryDto
+            var loans = await _loanRepo.GetActiveLoansByBookIdAsync(id);
+            return loans.Select(l => new ListLoansDto
             {
                 Id = l.Id,
                 LoanDate = l.LoanDate,
                 ReturnDate = l.ReturnDate,
                 ReturnedAt = l.ReturnedAt,
                 BookId = l.BookId,
-                BookName = l.Book.Name,
                 MemberName = l.MemberName
             }).ToList();
         }
 
-        public async Task<List<LoanHistoryDto>> GetLoanHistoryByBookIdAsync(int bookId)
+        public async Task<List<ListLoansDto>> GetLoanHistoryByMemberAsync(string memberName)
         {
-            var loans = await _loanRepo.GetLoanHistoryByBookIdAsync(bookId);
-            return loans.Select(l => new LoanHistoryDto
+            var loans = await _loanRepo.GetLoanHistoryByMemberAsync(memberName);
+            return loans.Select(l => new ListLoansDto
             {
                 Id = l.Id,
                 LoanDate = l.LoanDate,
                 ReturnDate = l.ReturnDate,
                 ReturnedAt = l.ReturnedAt,
                 BookId = l.BookId,
-                BookName = l.Book.Name,
+                MemberName = l.MemberName
+            }).ToList();
+        }
+
+        public async Task<List<ListLoansDto>> GetLoanHistoryByBookIdAsync(int bookId)
+        {
+            var loans = await _loanRepo.GetLoanHistoryByBookIdAsync(bookId);
+            return loans.Select(l => new ListLoansDto
+            {
+                Id = l.Id,
+                LoanDate = l.LoanDate,
+                ReturnDate = l.ReturnDate,
+                ReturnedAt = l.ReturnedAt,
+                BookId = l.BookId,
                 MemberName = l.MemberName
             }).ToList();
         }
@@ -103,14 +115,15 @@ namespace LibraryManagementSystem.Services
             }).ToList();
         }
 
-        public async Task<LoanHistoryDto?> CreateLoanAsync(CreateLoanDto dto)
+        public async Task<ListLoansDto?> CreateLoanAsync(CreateLoanDto dto)
         {
             var book = await _bookRepo.GetByIdAsync(dto.BookId);
             if (book == null) return null;
 
-            if (!await _bookRepo.IsAvailableAsync(dto.BookId))
+            // Check availability using the book we already fetched
+            if (book.PcsInStock <= 0)
             {
-                return null;
+                return null; // Not available
             }
 
             var loan = new Loan
@@ -128,14 +141,13 @@ namespace LibraryManagementSystem.Services
             await _bookRepo.DecrementStockAsync(dto.BookId);
 
             // Return with book name
-            return new LoanHistoryDto
+            return new ListLoansDto
             {
                 Id = loan.Id,
                 LoanDate = loan.LoanDate,
                 ReturnDate = loan.ReturnDate,
                 ReturnedAt = loan.ReturnedAt,
                 BookId = loan.BookId,
-                BookName = book.Name,
                 MemberName = loan.MemberName
             };
         }
