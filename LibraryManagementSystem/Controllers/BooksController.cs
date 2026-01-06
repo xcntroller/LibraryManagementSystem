@@ -1,5 +1,5 @@
 ﻿using LibraryManagementSystem.DTOs;
-using LibraryManagementSystem.Services;
+using LibraryManagementSystem.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagementSystem.Controllers
@@ -8,9 +8,9 @@ namespace LibraryManagementSystem.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private readonly BookService _bookService;
+        private readonly IBookService _bookService;
 
-        public BooksController(BookService bookService)
+        public BooksController(IBookService bookService)
         {
             _bookService = bookService;
         }
@@ -71,7 +71,7 @@ namespace LibraryManagementSystem.Controllers
         }
 
         // GET: api/Books/author/5
-        [HttpPost("author/{id}")]
+        [HttpGet("author/{id}")]
         public async Task<ActionResult<List<ListBookDto>>> GetBooksByAuthor(int id)
         {
             var books = await _bookService.GetBooksByAuthorIdAsync(id);
@@ -84,6 +84,10 @@ namespace LibraryManagementSystem.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            if (!IsValidISBN(dto.ISBN))
+                return BadRequest("Invalid ISBN format. Please provide a valid ISBN-10 or ISBN-13.");
+
 
             var book = await _bookService.CreateBookAsync(dto);
             if (book == null)
@@ -98,6 +102,9 @@ namespace LibraryManagementSystem.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            if (!IsValidISBN(dto.ISBN))
+                return BadRequest("Invalid ISBN format. Please provide a valid ISBN-10 or ISBN-13.");
 
             var success = await _bookService.UpdateBookAsync(id, dto);
             if (!success)
@@ -116,5 +123,61 @@ namespace LibraryManagementSystem.Controllers
 
             return NoContent();
         }
+
+        #region ISBN Validity check
+        private bool IsValidISBN(string isbn)
+        {
+            if (string.IsNullOrWhiteSpace(isbn))
+                return false;
+
+            isbn = isbn.Replace("-", "").Replace(" ", "");
+
+            // Check if it's ISBN-10 or ISBN-13
+            if (isbn.Length == 10)
+                return IsValidISBN10(isbn);
+            else if (isbn.Length == 13)
+                return IsValidISBN13(isbn);
+
+            return false;
+        }
+
+        private bool IsValidISBN10(string isbn)
+        {
+            if (!isbn.All(c => char.IsDigit(c) || c == 'X' || c == 'x'))
+                return false;
+
+            int sum = 0;
+            for (int i = 0; i < 9; i++)
+            {
+                if (!char.IsDigit(isbn[i]))
+                    return false;
+                sum += (isbn[i] - '0') * (10 - i);
+            }
+
+            char lastChar = isbn[9];
+            int checkDigit = lastChar == 'X' || lastChar == 'x' ? 10 : lastChar - '0';
+            sum += checkDigit;
+
+            return sum % 11 == 0;
+        }
+
+        private bool IsValidISBN13(string isbn)
+        {
+            if (!isbn.All(char.IsDigit))
+                return false;
+
+            int sum = 0;
+            for (int i = 0; i < 12; i++)
+            {
+                int digit = isbn[i] - '0';
+                sum += (i % 2 == 0) ? digit : digit * 3;
+            }
+
+            int checkDigit = isbn[12] - '0';
+            int calculatedCheckDigit = (10 - (sum % 10)) % 10;
+
+            return checkDigit == calculatedCheckDigit;
+        }
+        #endregion
     }
 }

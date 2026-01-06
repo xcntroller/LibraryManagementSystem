@@ -174,6 +174,13 @@ namespace LibraryManagementSystem.Services
 
             _logger.LogInformation("Deleted author {AuthorId} ({FirstName} {LastName})",
                 id, author.FirstName, author.LastName);
+
+            var deleted = await _authorRepo.DeleteAsync(author);
+            if (!deleted)
+            {
+                _logger.LogWarning("Repository prevented deletion of author {AuthorId} - constraint violation", id);
+                return false;
+            }
             return true;
         }
 

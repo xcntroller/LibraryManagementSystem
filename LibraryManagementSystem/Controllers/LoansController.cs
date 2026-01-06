@@ -1,5 +1,5 @@
 ﻿using LibraryManagementSystem.DTOs;
-using LibraryManagementSystem.Services;
+using LibraryManagementSystem.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagementSystem.Controllers
@@ -8,9 +8,9 @@ namespace LibraryManagementSystem.Controllers
     [ApiController]
     public class LoansController : ControllerBase
     {
-        private readonly LoanService _loanService;
+        private readonly ILoanService _loanService;
 
-        public LoansController(LoanService loanService)
+        public LoansController(ILoanService loanService)
         {
             _loanService = loanService;
         }

@@ -75,10 +75,14 @@ namespace LibraryManagementSystem.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(Author author)
+        public async Task<bool> DeleteAsync(Author author)
         {
+            if (await HasBooksAsync(author.Id))
+                return false;
+
             _context.Authors.Remove(author);
             await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<int> GetTotalAuthorsCountAsync()

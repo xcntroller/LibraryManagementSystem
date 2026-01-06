@@ -12,7 +12,7 @@ namespace LibraryManagementSystem.Interfaces
         Task<bool> HasBooksAsync(int id);
         Task AddAsync(Author author);
         Task UpdateAsync(Author author);
-        Task DeleteAsync(Author author);
+        Task<bool> DeleteAsync(Author author);
 
         //statistics
         Task<int> GetTotalAuthorsCountAsync();
