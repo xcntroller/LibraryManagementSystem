@@ -24,6 +24,25 @@ namespace LibraryManagementSystem.Repositories
             return await query.ToListAsync();
         }
 
+        public async Task<(List<Book> Items, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, string? filter = null)
+        {
+            var query = _context.Books.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filter))
+            {
+                query = query.Where(b => b.Name.Contains(filter) || b.ISBN.Contains(filter));
+            }
+
+            var totalCount = await query.CountAsync();
+            var items = await query
+                .OrderBy(b => b.Name)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
+        }
+
         public async Task<Book?> GetByIdAsync(int id)
         {
             return await _context.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
@@ -32,6 +51,14 @@ namespace LibraryManagementSystem.Repositories
         public async Task<Book?> GetByISBNAsync(string ISBN)
         {
             return await _context.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.ISBN == ISBN);
+        }
+
+        public async Task<List<Book>> GetByAuthorIdAsync(int authorId)
+        {
+            return await _context.Books
+                .Include(b => b.Author)
+                .Where(b => b.AuthorId == authorId)
+                .ToListAsync();
         }
 
         public async Task AddAsync(Book book)
@@ -75,6 +102,16 @@ namespace LibraryManagementSystem.Repositories
                 book.PcsInStock++;
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<int> GetTotalBooksCountAsync()
+        {
+            return await _context.Books.CountAsync();
+        }
+
+        public async Task<int> GetAvailableBooksCountAsync()
+        {
+            return await _context.Books.CountAsync(b => b.PcsInStock > 0);
         }
     }
 }

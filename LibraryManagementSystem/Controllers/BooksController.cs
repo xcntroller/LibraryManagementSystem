@@ -17,8 +17,22 @@ namespace LibraryManagementSystem.Controllers
 
         // GET: api/Books
         [HttpGet]
-        public async Task<ActionResult<List<ListBookDto>>> GetAllBooks([FromQuery] string? filter = null)
+        public async Task<ActionResult<PagedResultDto<ListBookDto>>> GetAllBooks(
+            [FromQuery] int? pageNumber = null,
+            [FromQuery] int? pageSize = null,
+            [FromQuery] string? filter = null)
         {
+            // If pagination parameters are provided, return paged results
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                if (pageNumber < 1 || pageSize < 1 || pageSize > 100)
+                    return BadRequest("Page number must be >= 1 and page size must be between 1 and 100.");
+
+                var pagedBooks = await _bookService.GetPagedBooksAsync(pageNumber.Value, pageSize.Value, filter);
+                return Ok(pagedBooks);
+            }
+
+            // Otherwise return all books
             var books = await _bookService.GetAllBooksAsync(filter);
             return Ok(books);
         }
@@ -54,6 +68,14 @@ namespace LibraryManagementSystem.Controllers
                 return NotFound($"Book with ID {id} not found.");
 
             return Ok(new { bookId = id, isAvailable = book.PcsInStock > 0 });
+        }
+
+        // GET: api/Books/author/5
+        [HttpPost("author/{id}")]
+        public async Task<ActionResult<List<ListBookDto>>> GetBooksByAuthor(int id)
+        {
+            var books = await _bookService.GetBooksByAuthorIdAsync(id);
+            return Ok(books);
         }
 
         // POST: api/Books/add

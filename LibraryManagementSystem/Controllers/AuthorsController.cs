@@ -17,8 +17,20 @@ namespace LibraryManagementSystem.Controllers
 
         // GET: api/Authors
         [HttpGet]
-        public async Task<ActionResult<List<ListAuthorDto>>> GetAllAuthors([FromQuery] string? filter = null)
+        public async Task<ActionResult> GetAllAuthors(
+            [FromQuery] int? pageNumber = null,
+            [FromQuery] int? pageSize = null,
+            [FromQuery] string? filter = null)
         {
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                if (pageNumber < 1 || pageSize < 1 || pageSize > 100)
+                    return BadRequest("Page number must be >= 1 and page size must be between 1 and 100.");
+
+                var pagedAuthors = await _authorService.GetPagedAuthorsAsync(pageNumber.Value, pageSize.Value, filter);
+                return Ok(pagedAuthors);
+            }
+
             var authors = await _authorService.GetAllAuthorsAsync(filter);
             return Ok(authors);
         }

@@ -14,6 +14,7 @@
         public DateTime? ReturnedAt { get; set; }
         public int BookId { get; set; }
         public string MemberName { get; set; } = null!;
+        public bool IsOverdue { get; set; }
     }
 
     public class LoanDetailDto 
@@ -24,5 +25,7 @@
         public DateTime? ReturnedAt { get; set; }
         public int BookId { get; set; }
         public string MemberName { get; set; } = null!;
+        public bool IsOverdue { get; set; }
+        public string? WarningMessage { get; set; }
     }
 }

@@ -17,8 +17,20 @@ namespace LibraryManagementSystem.Controllers
 
         // GET: api/Loans
         [HttpGet]
-        public async Task<ActionResult<List<ListLoansDto>>> GetAllLoans([FromQuery] string? filter = null)
+        public async Task<ActionResult> GetAllLoans(
+            [FromQuery] int? pageNumber = null,
+            [FromQuery] int? pageSize = null,
+            [FromQuery] string? filter = null)
         {
+            if (pageNumber.HasValue && pageSize.HasValue)
+            {
+                if (pageNumber < 1 || pageSize < 1 || pageSize > 100)
+                    return BadRequest("Page number must be >= 1 and page size must be between 1 and 100.");
+
+                var pagedLoans = await _loanService.GetPagedLoansAsync(pageNumber.Value, pageSize.Value, filter);
+                return Ok(pagedLoans);
+            }
+
             var loans = await _loanService.GetAllLoansAsync(filter);
             return Ok(loans);
         }

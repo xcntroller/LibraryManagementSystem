@@ -1,35 +1,36 @@
 ﻿using LibraryManagementSystem.Interfaces;
 using LibraryManagementSystem.DTOs;
 using LibraryManagementSystem.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace LibraryManagementSystem.Services
 {
-    public class AuthorService
+    public class AuthorService : IAuthorService
     {
         private readonly IAuthorRepository _authorRepo;
+        private readonly ILogger<AuthorService> _logger;
 
-        public AuthorService(IAuthorRepository authorRepo)
+        public AuthorService(IAuthorRepository authorRepo, ILogger<AuthorService> logger)
         {
             _authorRepo = authorRepo;
+            _logger = logger;
         }
 
-        public async Task<List<ListAuthorDto>> GetAllAuthorsAsync(string? filter)
+        #region Helper Methods
+
+        private static ListAuthorDto MapToListAuthorDto(Author author)
         {
-            var authors = await _authorRepo.GetAllAsync(filter);
-            return authors.Select(a => new ListAuthorDto
+            return new ListAuthorDto
             {
-                Id = a.Id,
-                FirstName = a.FirstName,
-                LastName = a.LastName,
-                BirthYear = a.BirthYear,
-            }).ToList();
+                Id = author.Id,
+                FirstName = author.FirstName,
+                LastName = author.LastName,
+                BirthYear = author.BirthYear
+            };
         }
 
-        public async Task<AuthorDetailDto?> GetAuthorByIdAsync(int id)
+        private static AuthorDetailDto MapToAuthorDetailDto(Author author)
         {
-            var author = await _authorRepo.GetByIdAsync(id);
-            if (author == null) return null;
-
             return new AuthorDetailDto
             {
                 Id = author.Id,
@@ -46,6 +47,41 @@ namespace LibraryManagementSystem.Services
                     AuthorId = b.AuthorId
                 }).ToList()
             };
+        }
+
+        #endregion
+
+        #region Query Methods
+
+        public async Task<List<ListAuthorDto>> GetAllAuthorsAsync(string? filter)
+        {
+            var authors = await _authorRepo.GetAllAsync(filter);
+            return authors.Select(a => MapToListAuthorDto(a)).ToList();
+        }
+
+        public async Task<PagedResultDto<ListAuthorDto>> GetPagedAuthorsAsync(int pageNumber, int pageSize, string? filter)
+        {
+            var (items, totalCount) = await _authorRepo.GetPagedAsync(pageNumber, pageSize, filter);
+
+            return new PagedResultDto<ListAuthorDto>
+            {
+                Items = items.Select(a => MapToListAuthorDto(a)).ToList(),
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            };
+        }
+
+        public async Task<AuthorDetailDto?> GetAuthorByIdAsync(int id)
+        {
+            var author = await _authorRepo.GetByIdAsync(id);
+            if (author == null)
+            {
+                _logger.LogWarning("Author with ID {AuthorId} not found", id);
+                return null;
+            }
+
+            return MapToAuthorDetailDto(author);
         }
 
         public async Task<List<ListBookDto>> GetAuthorsBooksAsync(int authorId)
@@ -67,6 +103,10 @@ namespace LibraryManagementSystem.Services
             return await _authorRepo.ExistsByIdAsync(id);
         }
 
+        #endregion
+
+        #region Command Methods
+
         public async Task<AuthorDetailDto?> CreateAuthorAsync(CreateAuthorDto dto)
         {
             var author = new Author
@@ -79,6 +119,9 @@ namespace LibraryManagementSystem.Services
 
             await _authorRepo.AddAsync(author);
 
+            _logger.LogInformation("Created author {AuthorId} ({FirstName} {LastName})",
+                author.Id, author.FirstName, author.LastName);
+
             return new AuthorDetailDto
             {
                 Id = author.Id,
@@ -86,14 +129,18 @@ namespace LibraryManagementSystem.Services
                 LastName = author.LastName,
                 Description = author.Description,
                 BirthYear = author.BirthYear,
-                Books = new List<ListBookDto>()
+                Books = []
             };
         }
 
         public async Task<bool> UpdateAuthorAsync(int id, UpdateAuthorDto dto)
         {
             var author = await _authorRepo.GetByIdAsync(id);
-            if (author == null) return false;
+            if (author == null)
+            {
+                _logger.LogWarning("Failed to update - Author {AuthorId} not found", id);
+                return false;
+            }
 
             author.FirstName = dto.FirstName;
             author.LastName = dto.LastName;
@@ -101,21 +148,35 @@ namespace LibraryManagementSystem.Services
             author.BirthYear = dto.BirthYear;
 
             await _authorRepo.UpdateAsync(author);
+
+            _logger.LogInformation("Updated author {AuthorId} ({FirstName} {LastName})",
+                id, author.FirstName, author.LastName);
             return true;
         }
 
         public async Task<bool> DeleteAuthorAsync(int id)
         {
             var author = await _authorRepo.GetByIdAsync(id);
-            if (author == null) return false;
+            if (author == null)
+            {
+                _logger.LogWarning("Failed to delete - Author {AuthorId} not found", id);
+                return false;
+            }
 
             if (await _authorRepo.HasBooksAsync(id))
             {
-                return false; // Cannot delete author with books
+                _logger.LogWarning("Failed to delete author {AuthorId} ({FirstName} {LastName}) - has assigned books",
+                    id, author.FirstName, author.LastName);
+                return false;
             }
 
             await _authorRepo.DeleteAsync(author);
+
+            _logger.LogInformation("Deleted author {AuthorId} ({FirstName} {LastName})",
+                id, author.FirstName, author.LastName);
             return true;
         }
+
+        #endregion
     }
 }

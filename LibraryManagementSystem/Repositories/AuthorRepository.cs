@@ -23,6 +23,26 @@ namespace LibraryManagementSystem.Repositories
             return await query.ToListAsync();
         }
 
+        public async Task<(List<Author> Items, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, string? filter = null)
+        {
+            var query = _context.Authors.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filter))
+            {
+                query = query.Where(a => a.FirstName.Contains(filter) || a.LastName.Contains(filter));
+            }
+
+            var totalCount = await query.CountAsync();
+            var items = await query
+                .OrderBy(a => a.LastName)
+                .ThenBy(a => a.FirstName)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
+        }
+
         public async Task<Author?> GetByIdAsync(int id)
         {
             return await _context.Authors.Include(a => a.Books).SingleOrDefaultAsync(a => a.Id == id);
@@ -59,6 +79,11 @@ namespace LibraryManagementSystem.Repositories
         {
             _context.Authors.Remove(author);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> GetTotalAuthorsCountAsync()
+        {
+            return await _context.Authors.CountAsync();
         }
     }
 }
