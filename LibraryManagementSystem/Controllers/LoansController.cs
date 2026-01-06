@@ -47,7 +47,8 @@ namespace LibraryManagementSystem.Controllers
         }
 
         // GET: api/Loans/books/5/active
-        // this might be redundant
+        // this might be redundant - you can get the entire history of a book from GetLoanHistoryByBookId
+        // however i'm gonna keep this here since it could be useful in some cases where you only need the unreturned loans
         [HttpGet("books/{id}/active")]
         public async Task<ActionResult<List<ListLoansDto>>> GetActiveLoansByBookId(int id)
         {
@@ -62,12 +63,11 @@ namespace LibraryManagementSystem.Controllers
         public async Task<ActionResult<List<ListLoansDto>>> GetLoanHistoryByPerson(string memberName) 
         {
             var history = await _loanService.GetLoanHistoryByMemberAsync(memberName);
-            if (history == null) return NotFound($"{memberName} didn't loan any books.");
             return Ok(history);
         }
 
         // GET: api/Loans/books/5
-        [HttpGet("/books/{id}")]
+        [HttpGet("books/{id}")]
         public async Task<ActionResult<List<ListLoansDto>>> GetLoanHistoryByBookId(int id)
         {
             var history = await _loanService.GetLoanHistoryByBookIdAsync(id);

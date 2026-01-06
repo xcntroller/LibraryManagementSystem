@@ -148,7 +148,7 @@ namespace LibraryManagementSystem.Services
 
             book.Name = dto.Name;
             book.ISBN = dto.ISBN;
-            book.Description = dto.Description;
+            book.Description = dto.Description ?? book.Description;
             book.PublicationYear = dto.PublicationYear;
             book.PcsTotal = dto.PcsTotal;
             book.AuthorId = dto.AuthorId;
@@ -178,20 +178,6 @@ namespace LibraryManagementSystem.Services
 
             _logger.LogInformation("Deleted book {BookId} ({BookName})", id, book.Name);
             return true;
-        }
-
-        #endregion
-
-        #region Stock Management
-
-        public async Task DecrementStockAsync(int bookId)
-        {
-            await _bookRepo.DecrementStockAsync(bookId);
-        }
-
-        public async Task IncrementStockAsync(int bookId)
-        {
-            await _bookRepo.IncrementStockAsync(bookId);
         }
 
         #endregion

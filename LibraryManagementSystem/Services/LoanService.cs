@@ -36,7 +36,7 @@ namespace LibraryManagementSystem.Services
 
             if (isOverdue)
             {
-                warningMessage = $"⚠️ VAROVÁNÍ: Tato kniha už měla být vrácena! Očekávaný datum vrácení: {loan.ReturnDate:dd-MM-yyyy}.";
+                warningMessage = $"⚠️ VAROVÁNÍ: Tato kniha už měla být vrácena! Očekávané datum vrácení: {loan.ReturnDate:dd-MM-yyyy}.";
             }
 
             return new LoanDetailDto

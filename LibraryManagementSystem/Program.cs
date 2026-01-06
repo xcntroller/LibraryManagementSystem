@@ -1,7 +1,7 @@
 using LibraryManagementSystem.Data;
-using LibraryManagementSystem.Services;
-using LibraryManagementSystem.Repositories;
 using LibraryManagementSystem.Interfaces;
+using LibraryManagementSystem.Repositories;
+using LibraryManagementSystem.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,12 +50,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
-
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<LibraryDbContext>();
-    db.Database.Migrate();
-}
 
 app.UseAuthorization();
 

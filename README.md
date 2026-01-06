@@ -10,6 +10,13 @@ Aplikace Library Management System umožňuje komplexní správu knihovny včetn
 - Správa půjček - sledování aktivních půjček, historie a upozornění na prodlení
 - Statistiky - přehledy o nejpůjčovanějších knihách a celkových statistikách knihovny
 
+## Technologie a architektura
+
+- Framework: ASP.NET Core (.NET 10)
+- Databáze: SQLite s Entity Framework Core
+- Architektura: Repository pattern, Service layer, Dependency Injection
+- Dokumentace API: Swagger/OpenAPI
+
 ## Požadavky
 
 - .NET 10 SDK nebo vyšší
@@ -21,7 +28,7 @@ Aplikace Library Management System umožňuje komplexní správu knihovny včetn
 cmd:
 ```
 git clone https://github.com/xcntroller/LibraryManagementSystem.git
-cd LibraryManagementSystem
+cd LibraryManagementSystem/LibraryManagementSystem
 ```
 
 ### 2. Obnovení dependencies
@@ -64,14 +71,14 @@ Získání seznamu všech autorů s podporou stránkování a filtrování.
 - `filter` (optional): Fulltextové vyhledávání
 
 *Příklad požadavku:*
-GET https://localhost:5091/api/Authors/1
+GET https://localhost:5091/api/Authors?pageNumber=1&pageSize=20&filter=George%20Orwell
 
 
 #### GET `/api/Authors/{id}`
 Získání detailu konkrétního autora.
 
 *Příklad požadavku:*
-GET https://localhost:5091/api/Authors/1/books
+GET https://localhost:5091/api/Authors/1
 
 #### POST `/api/Authors/add`
 Vytvoření nového autora.
@@ -143,7 +150,7 @@ Vytvoření nové knihy.
 
 *Příklad požadavku:*
 POST https://localhost:5091/api/Books/add Content-Type: application/json
-`{ "name": "Pán prstenů: Společenstvo prstenu", "isbn": "9780261102354", "description": "První díl epické fantasy trilogie", "publicationYear": 1954, "pcsTotal": 10, "pcsInStock": 10, "authorId": 1 }`
+`{ "name": "Pán prstenů: Společenstvo prstenu", "isbn": "9780261102354", "description": "První díl epické fantasy trilogie", "publicationYear": 1954, "pcsTotal": 10, "authorId": 1 }`
 
 #### PUT `/api/Books/{id}`
 Aktualizace informací o knize.
@@ -208,7 +215,7 @@ GET https://localhost:5091/api/Loans/member?memberName=Jan%20Novák
 Získání historie půjček konkrétní knihy.
 
 *Příklad požadavku:*
-GET https://localhost:5091/Loans/books/5
+GET https://localhost:5091/api/Loans/books/5
 
 #### POST `/api/Loans/add`
 Vytvoření nové půjčky (automatická výpůjční doba 14 dní).
@@ -303,8 +310,9 @@ Rožšířil bych možnosti vyhledávání:
 - Systém tagů a kategorií
 - Filtry podle žánrů, roku vydání a dostupnosti
 
-### 3. Rezervační systém
-Přidal bych funkcionalitu pro rezervaci knih.
+### 3. Konfigurační soubor
+Přidal bych lepší konfiguraci projektu:
+- Místo const proměnných v samotných souborech bych přidal config soubor, aby se všechny proměnné které by uživatel mohl chtít změnit (například LoanPeriod) daly jednoduše změnit
 
 ##  Licence
 

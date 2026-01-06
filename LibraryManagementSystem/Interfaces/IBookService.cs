@@ -12,7 +12,5 @@ namespace LibraryManagementSystem.Interfaces
         Task<BookDetailDto?> CreateBookAsync(CreateBookDto dto);
         Task<bool> UpdateBookAsync(int id, UpdateBookDto dto);
         Task<bool> DeleteBookAsync(int id);
-        Task DecrementStockAsync(int bookId);
-        Task IncrementStockAsync(int bookId);
     }
 }

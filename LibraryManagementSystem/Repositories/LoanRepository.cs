@@ -16,7 +16,7 @@ namespace LibraryManagementSystem.Repositories
 
         public async Task<List<Loan>> GetAllAsync(string? filter = null)
         {
-            var query = _context.Loans.AsQueryable();
+            var query = _context.Loans.Include(l => l.Book).AsQueryable();
             if (!string.IsNullOrEmpty(filter))
             {
                 query = query.Where(l => l.Book.Name.Contains(filter) || l.MemberName.Contains(filter));
